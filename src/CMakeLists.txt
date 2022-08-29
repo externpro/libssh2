@@ -60,11 +60,9 @@ endif()
 
 if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
 
-  option(FIND_OPENSSL_MODULE_PATH "Find OpenSSL in CMAKE_MODULE_PATH" OFF)
-  mark_as_advanced(FIND_OPENSSL_MODULE_PATH)
-
-  if(FIND_OPENSSL_MODULE_PATH)
-    find_package(usexp-OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT} PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
+  if(COMMAND xpFindPkg)
+    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
+    xpFindPkg(PKGS openssl)
   else()
     find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
   endif()
@@ -223,15 +221,15 @@ endif()
 
 add_library(libssh2 ${SOURCES})
 # we want it to be called libssh2 on all platforms
-set_target_properties(libssh2 PROPERTIES OUTPUT_NAME libssh2${_ver} PREFIX "")
+set_target_properties(libssh2 PROPERTIES PREFIX "")
 
 target_compile_definitions(libssh2 PRIVATE ${PRIVATE_COMPILE_DEFINITIONS})
 target_include_directories(libssh2
   PRIVATE "${PROJECT_SOURCE_DIR}/include/" ${PRIVATE_INCLUDE_DIRECTORIES}
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include/${PROJECT_NAME}${_ver}> #include <libssh2/libssh2.h>
-    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>)   #include <libssh2.h>
+    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
+    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>)
 
 ## Options
 
@@ -247,11 +245,9 @@ option(ENABLE_ZLIB_COMPRESSION "Use zlib for compression")
 add_feature_info(Compression ENABLE_ZLIB_COMPRESSION
   "using zlib for compression")
 if(ENABLE_ZLIB_COMPRESSION)
-  option(FIND_ZLIB_MODULE_PATH "Find zlib in CMAKE_MODULE_PATH" OFF)
-  mark_as_advanced(FIND_ZLIB_MODULE_PATH)
-
-  if(FIND_ZLIB_MODULE_PATH)
-    find_package(usexp-ZLIB REQUIRED PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
+  if(COMMAND xpFindPkg)
+    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
+    xpFindPkg(PKGS zlib)
   else()
     find_package(ZLIB REQUIRED)
     target_include_directories(libssh2 PRIVATE ${ZLIB_INCLUDE_DIRS})
@@ -387,7 +383,7 @@ install(FILES
   ${PROJECT_SOURCE_DIR}/include/libssh2.h
   ${PROJECT_SOURCE_DIR}/include/libssh2_publickey.h
   ${PROJECT_SOURCE_DIR}/include/libssh2_sftp.h
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
 install(TARGETS libssh2
   EXPORT Libssh2Config
@@ -413,7 +409,7 @@ endif()
 ## During package installation, install Libssh2Config.cmake
 install(EXPORT Libssh2Config
   NAMESPACE ${nameSpace}
-  DESTINATION lib/cmake/libssh2${_ver})
+  DESTINATION lib/cmake/libssh2)
 
 ## During build, register directly from build tree
 # create Libssh2Config.cmake
@@ -430,7 +426,7 @@ endif()
 configure_file(libssh2.pc.in libssh2.pc @ONLY)
 install(
   FILES ${CMAKE_CURRENT_BINARY_DIR}/libssh2.pc
-  RENAME libssh2${_ver}.pc ${XP_OPT_INSTALL}
+  ${XP_OPT_INSTALL}
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 ## Versioning
@@ -446,4 +442,4 @@ write_basic_package_version_file(
   COMPATIBILITY SameMajorVersion)
 install(
   FILES ${CMAKE_CURRENT_BINARY_DIR}/Libssh2ConfigVersion.cmake
-  DESTINATION lib/cmake/libssh2${_ver})
+  DESTINATION lib/cmake/libssh2)

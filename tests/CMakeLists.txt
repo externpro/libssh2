@@ -71,8 +71,9 @@ endif()
 
 if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
 
-  if(FIND_OPENSSL_MODULE_PATH)
-    find_package(usexp-OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT} PATHS ${CMAKE_MODULE_PATH} NO_DEFAULT_PATH)
+  if(COMMAND xpFindPkg)
+    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
+    xpFindPkg(PKGS openssl)
   else()
     find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
   endif()

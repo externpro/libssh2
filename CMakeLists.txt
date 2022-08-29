@@ -45,6 +45,9 @@ project(libssh2 C)
 set(PROJECT_URL "https://www.libssh2.org/")
 set(PROJECT_DESCRIPTION "The SSH library")
 include(flags OPTIONAL)
+if(DEFINED XP_NAMESPACE)
+  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
+endif()
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
   if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -80,18 +83,6 @@ if(NOT LIBSSH2_VERSION OR
     FATAL_ERROR
     "Unable to parse version from"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/libssh2.h")
-endif()
-
-if(NOT DEFINED LIBSSH2_VER)
-  set(LIBSSH2_VER ${LIBSSH2_VERSION})
-elseif(NOT LIBSSH2_VER STREQUAL LIBSSH2_VERSION)
-  message(AUTHOR_WARNING "version passed in (${LIBSSH2_VER}) doesn't match version from include/libssh2.h (${LIBSSH2_VERSION})")
-endif()
-if(XP_INSTALL_DIRS)
-  set(_ver _${LIBSSH2_VER})
-  set(CMAKE_INSTALL_DOCDIR share/doc/${PROJECT_NAME}${_ver})
-  set(CMAKE_INSTALL_INCLUDEDIR include/${PROJECT_NAME}${_ver}/${PROJECT_NAME})
-  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
 endif()
 
 include(GNUInstallDirs)
