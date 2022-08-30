@@ -61,7 +61,6 @@ endif()
 if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
 
   if(COMMAND xpFindPkg)
-    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
     xpFindPkg(PKGS openssl)
   else()
     find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
@@ -246,7 +245,6 @@ add_feature_info(Compression ENABLE_ZLIB_COMPRESSION
   "using zlib for compression")
 if(ENABLE_ZLIB_COMPRESSION)
   if(COMMAND xpFindPkg)
-    set(XP_MODULE_PATH ${CMAKE_MODULE_PATH})
     xpFindPkg(PKGS zlib)
   else()
     find_package(ZLIB REQUIRED)
@@ -399,12 +397,6 @@ set(RUNTIME_DEPENDENCIES ${_RUNTIME_DEPENDENCIES} CACHE INTERNAL
     "Files that must be in the same directory as the executables at runtime.")
 
 # Package config
-
-if(DEFINED XP_NAMESPACE)
-  set(nameSpace ${XP_NAMESPACE}::)
-else()
-  set(nameSpace Libssh2::)
-endif()
 
 ## During package installation, install Libssh2Config.cmake
 install(EXPORT Libssh2Config
