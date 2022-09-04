@@ -434,4 +434,4 @@ write_basic_package_version_file(
   COMPATIBILITY SameMajorVersion)
 install(
   FILES ${CMAKE_CURRENT_BINARY_DIR}/Libssh2ConfigVersion.cmake
-  DESTINATION lib/cmake/libssh2)
+  DESTINATION ${XP_INSTALL_CMAKEDIR})
