@@ -33,7 +33,7 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 # OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 2.8.11...3.21)
+cmake_minimum_required(VERSION 2.8.11...3.31)
 
 if(DEFINED CMAKE_MODULE_PATH)
   list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -44,7 +44,7 @@ endif()
 project(libssh2 C)
 set(PROJECT_URL "https://www.libssh2.org/")
 set(PROJECT_DESCRIPTION "The SSH library")
-include(flags OPTIONAL)
+include(xpflags)
 if(DEFINED XP_NAMESPACE)
   set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
   set(nameSpace ${XP_NAMESPACE}::)
