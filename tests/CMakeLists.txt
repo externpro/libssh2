@@ -71,11 +71,7 @@ endif()
 
 if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
 
-  if(COMMAND xpFindPkg)
-    xpFindPkg(PKGS openssl)
-  else()
-    find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
-  endif()
+  find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
 
   if(OPENSSL_FOUND)
     set(CRYPTO_BACKEND "OpenSSL")

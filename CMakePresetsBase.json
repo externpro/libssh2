@@ -1,0 +1,22 @@
+{
+  "version": 8,
+  "configurePresets": [
+    {
+      "name": "config-base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/_bld-${presetName}",
+      "cacheVariables": {
+        "BUILD_TESTING": "OFF",
+        "CRYPTO_BACKEND": "OpenSSL",
+        "ENABLE_ZLIB_COMPRESSION": "ON",
+        "XP_NAMESPACE": "xpro"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-base",
+      "hidden": true
+    }
+  ]
+}

@@ -35,24 +35,27 @@
 
 cmake_minimum_required(VERSION 2.8.11...3.21)
 
-if(DEFINED CMAKE_MODULE_PATH)
-  list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-else()
-  set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-endif()
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES .devcontainer/cmake/xproinc.cmake)
 
 project(libssh2 C)
 set(PROJECT_URL "https://www.libssh2.org/")
 set(PROJECT_DESCRIPTION "The SSH library")
+include(GNUInstallDirs)
 include(xpflags)
-if(DEFINED XP_NAMESPACE)
-  set(XP_OPT_INSTALL EXCLUDE_FROM_ALL)
-  set(nameSpace ${XP_NAMESPACE}::)
-else()
-  set(nameSpace Libssh2::)
-endif()
+set(targetsFile Libssh2Config)
 if(NOT DEFINED XP_INSTALL_CMAKEDIR)
   set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME})
+endif()
+if(DEFINED XP_NAMESPACE)
+  set(XP_OPT_INSTALL FALSE)
+  set(nameSpace ${XP_NAMESPACE}::)
+  xpPackageDevel(TARGETS_FILE ${targetsFile} DEPS openssl zlib
+    LIBRARIES ${XP_NAMESPACE}::${PROJECT_NAME}
+    )
+else()
+  set(XP_OPT_INSTALL TRUE)
+  set(nameSpace Libssh2::)
 endif()
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
@@ -91,7 +94,6 @@ if(NOT LIBSSH2_VERSION OR
     "${CMAKE_CURRENT_SOURCE_DIR}/include/libssh2.h")
 endif()
 
-include(GNUInstallDirs)
 install(
   FILES docs/AUTHORS COPYING docs/HACKING README RELEASE-NOTES NEWS
   DESTINATION ${CMAKE_INSTALL_DOCDIR})
@@ -120,4 +122,6 @@ set(CPACK_PACKAGE_VERSION_MAJOR ${LIBSSH2_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${LIBSSH2_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${LIBSSH2_VERSION_PATCH})
 set(CPACK_PACKAGE_VERSION ${LIBSSH2_VERSION})
+if(XP_OPT_INSTALL)
 include(CPack)
+endif()

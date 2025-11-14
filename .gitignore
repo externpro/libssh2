@@ -33,3 +33,7 @@ tags
 libssh2.pc
 TAGS
 *~
+# externpro
+.env
+_bld*/
+docker-compose.override.yml
