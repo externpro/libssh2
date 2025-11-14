@@ -35,11 +35,8 @@
 
 cmake_minimum_required(VERSION 2.8.11...3.21)
 
-if(DEFINED CMAKE_MODULE_PATH)
-  list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-else()
-  set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-endif()
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES .devcontainer/cmake/xproinc.cmake)
 
 project(libssh2 C)
 set(PROJECT_URL "https://www.libssh2.org/")
