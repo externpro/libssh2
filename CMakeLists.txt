@@ -41,22 +41,6 @@ set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES .devcontainer/cmake/xproinc.cmake)
 project(libssh2 C)
 set(PROJECT_URL "https://www.libssh2.org/")
 set(PROJECT_DESCRIPTION "The SSH library")
-include(GNUInstallDirs)
-include(xpflags)
-set(targetsFile Libssh2Config)
-if(NOT DEFINED XP_INSTALL_CMAKEDIR)
-  set(XP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
-endif()
-if(DEFINED XP_NAMESPACE)
-  set(XP_OPT_INSTALL FALSE)
-  set(nameSpace ${XP_NAMESPACE}::)
-  xpPackageDevel(TARGETS_FILE ${targetsFile} DEPS openssl zlib
-    LIBRARIES ${XP_NAMESPACE}::${PROJECT_NAME}
-    )
-else()
-  set(XP_OPT_INSTALL TRUE)
-  set(nameSpace Libssh2::)
-endif()
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
   if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -94,6 +78,26 @@ if(NOT LIBSSH2_VERSION OR
     "${CMAKE_CURRENT_SOURCE_DIR}/include/libssh2.h")
 endif()
 
+set(targetsFile Libssh2Config)
+if(DEFINED XP_NAMESPACE)
+  xpExternPackage(NAMESPACE ${XP_NAMESPACE} ALIAS_NAMESPACE Libssh2
+    TARGETS_FILE ${targetsFile} LIBRARIES ${PROJECT_NAME}
+    BASE ${PROJECT_NAME}-${LIBSSH2_VERSION_MAJOR}.${LIBSSH2_VERSION_MINOR}.${LIBSSH2_VERSION_PATCH}
+    XPDIFF "patch" DEPS openssl zlib
+    WEB "http://www.libssh2.org/" UPSTREAM "github.com/libssh2/libssh2"
+    DESC "client-side C library implementing SSH2 protocol"
+    LICENSE "[BSD-3-Clause](http://www.libssh2.org/license.html 'BSD 3-Clause New or Revised License')"
+    )
+  set(CMAKE_OPT_INSTALL FALSE)
+  set(CMAKE_NAMESPACE ${XP_NAMESPACE})
+  set(CMAKE_INSTALL_CMAKEDIR ${XP_INSTALL_CMAKEDIR})
+else()
+  set(CMAKE_OPT_INSTALL TRUE)
+  set(CMAKE_NAMESPACE Libssh2)
+  set(CMAKE_INSTALL_CMAKEDIR lib/cmake/libssh2)
+endif()
+
+include(GNUInstallDirs)
 install(
   FILES docs/AUTHORS COPYING docs/HACKING README RELEASE-NOTES NEWS
   DESTINATION ${CMAKE_INSTALL_DOCDIR})
@@ -122,6 +126,6 @@ set(CPACK_PACKAGE_VERSION_MAJOR ${LIBSSH2_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${LIBSSH2_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${LIBSSH2_VERSION_PATCH})
 set(CPACK_PACKAGE_VERSION ${LIBSSH2_VERSION})
-if(XP_OPT_INSTALL)
+if(CMAKE_OPT_INSTALL)
 include(CPack)
 endif()

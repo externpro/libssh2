@@ -207,6 +207,6 @@ set(MAN_PAGES
   libssh2_version.3)
 
 include(GNUInstallDirs)
-if(XP_OPT_INSTALL)
+if(CMAKE_OPT_INSTALL)
 install(FILES ${MAN_PAGES} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3)
 endif()
