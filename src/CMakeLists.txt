@@ -62,7 +62,7 @@ if(CRYPTO_BACKEND STREQUAL "OpenSSL" OR NOT CRYPTO_BACKEND)
 
   find_package(OpenSSL ${SPECIFIC_CRYPTO_REQUIREMENT})
 
-  if(OPENSSL_FOUND)
+  if(OPENSSL_FOUND OR OpenSSL_FOUND)
     set(CRYPTO_BACKEND "OpenSSL")
     set(CRYPTO_SOURCES openssl.c openssl.h)
     list(APPEND PRIVATE_COMPILE_DEFINITIONS LIBSSH2_OPENSSL)
@@ -242,8 +242,12 @@ add_feature_info(Compression ENABLE_ZLIB_COMPRESSION
 if(ENABLE_ZLIB_COMPRESSION)
   find_package(ZLIB REQUIRED)
 
-  if(NOT TARGET xpro::zlib)
+  if(DEFINED ZLIB_INCLUDE_DIRS AND EXISTS ${ZLIB_INCLUDE_DIRS})
   target_include_directories(libssh2 PRIVATE ${ZLIB_INCLUDE_DIRS})
+  endif()
+  # TODO: Remove this when externpro/zlib has a new release with usext.cmake updates
+  if(NOT DEFINED ZLIB_LIBRARIES AND TARGET zlib::zlibstatic)
+    set(ZLIB_LIBRARIES zlib::zlibstatic)
   endif()
   list(APPEND LIBRARIES ${ZLIB_LIBRARIES})
   list(APPEND PC_REQUIRES_PRIVATE zlib)
@@ -392,14 +396,14 @@ set(RUNTIME_DEPENDENCIES ${_RUNTIME_DEPENDENCIES} CACHE INTERNAL
 
 # Package config
 
-## During package installation, install Libssh2Config.cmake
+## During package installation, install ${targetsFile}
 install(EXPORT ${targetsFile}
-  NAMESPACE ${CMAKE_NAMESPACE}::
+  NAMESPACE ${CMAKE_PROJECT_NAME}::
   DESTINATION ${CMAKE_INSTALL_CMAKEDIR})
 
 ## During build, register directly from build tree
-# create Libssh2Config.cmake
-export(TARGETS libssh2 NAMESPACE ${CMAKE_NAMESPACE}:: FILE ${targetsFile}.cmake)
+# create ${targetsFile}
+export(TARGETS libssh2 NAMESPACE ${CMAKE_PROJECT_NAME}:: FILE ${targetsFile}.cmake)
 export(PACKAGE Libssh2) # register it
 
 ## Export a .pc file for client projects not using CMaek
@@ -427,6 +431,8 @@ write_basic_package_version_file(
   ${CMAKE_CURRENT_BINARY_DIR}/${targetsFile}Version.cmake
   VERSION "${LIBSSH2_VERSION_MAJOR}.${LIBSSH2_VERSION_MINOR}.${LIBSSH2_VERSION_PATCH}"
   COMPATIBILITY SameMajorVersion)
+if(CMAKE_OPT_INSTALL)
 install(
   FILES ${CMAKE_CURRENT_BINARY_DIR}/${targetsFile}Version.cmake
   DESTINATION ${CMAKE_INSTALL_CMAKEDIR})
+endif()

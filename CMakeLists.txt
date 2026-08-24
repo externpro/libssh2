@@ -36,7 +36,6 @@
 cmake_minimum_required(VERSION 2.8.11...3.21)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES .devcontainer/cmake/xproinc.cmake)
 
 project(libssh2 C)
 set(PROJECT_URL "https://www.libssh2.org/")
@@ -78,21 +77,14 @@ if(NOT LIBSSH2_VERSION OR
     "${CMAKE_CURRENT_SOURCE_DIR}/include/libssh2.h")
 endif()
 
-set(targetsFile Libssh2Config)
-if(DEFINED XP_NAMESPACE)
-  xpExternPackage(NAMESPACE ${XP_NAMESPACE} ALIAS_NAMESPACE Libssh2
-    TARGETS_FILE ${targetsFile} LIBRARIES ${PROJECT_NAME}
-    BASE ${PROJECT_NAME}-${LIBSSH2_VERSION_MAJOR}.${LIBSSH2_VERSION_MINOR}.${LIBSSH2_VERSION_PATCH}
-    XPDIFF "patch" DEPS openssl zlib
-    WEB "http://www.libssh2.org/" UPSTREAM "github.com/libssh2/libssh2"
-    DESC "client-side C library implementing SSH2 protocol"
-    LICENSE "[BSD-3-Clause](http://www.libssh2.org/license.html 'BSD 3-Clause New or Revised License')"
-    )
+set(targetsFile ${PROJECT_NAME}-targets)
+if(COMMAND xpExternPackage)
   set(CMAKE_OPT_INSTALL FALSE)
-  set(CMAKE_NAMESPACE ${XP_NAMESPACE})
+  if(NOT DEFINED CMAKE_INSTALL_CMAKEDIR)
+    set(CMAKE_INSTALL_CMAKEDIR ${CMAKE_INSTALL_DATADIR}/cmake)
+  endif()
 else()
   set(CMAKE_OPT_INSTALL TRUE)
-  set(CMAKE_NAMESPACE Libssh2)
   set(CMAKE_INSTALL_CMAKEDIR lib/cmake/libssh2)
 endif()
 
@@ -121,10 +113,19 @@ add_subdirectory(docs)
 
 feature_summary(WHAT ALL)
 
+if(CMAKE_OPT_INSTALL)
 set(CPACK_PACKAGE_VERSION_MAJOR ${LIBSSH2_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${LIBSSH2_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${LIBSSH2_VERSION_PATCH})
 set(CPACK_PACKAGE_VERSION ${LIBSSH2_VERSION})
-if(CMAKE_OPT_INSTALL)
 include(CPack)
+elseif(COMMAND xpExternPackage)
+  xpExternPackage(TARGETS_FILE ${targetsFile} ALIAS_NAMESPACE Libssh2
+    LIBRARIES ${PROJECT_NAME} DEFAULT_TARGETS ${PROJECT_NAME}
+    BASE ${PROJECT_NAME}-${LIBSSH2_VERSION_MAJOR}.${LIBSSH2_VERSION_MINOR}.${LIBSSH2_VERSION_PATCH}
+    XPDIFF "patch"
+    WEB "http://www.libssh2.org/" UPSTREAM "github.com/libssh2/libssh2"
+    DESC "client-side C library implementing SSH2 protocol"
+    LICENSE "[BSD-3-Clause](http://www.libssh2.org/license.html 'BSD 3-Clause New or Revised License')"
+    )
 endif()
