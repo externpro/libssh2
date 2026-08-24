@@ -9,7 +9,7 @@
         "BUILD_TESTING": "OFF",
         "CRYPTO_BACKEND": "OpenSSL",
         "ENABLE_ZLIB_COMPRESSION": "ON",
-        "XP_NAMESPACE": "xpro"
+        "CMAKE_EXPERIMENTAL_GENERATE_SBOM": "ca494ed3-b261-4205-a01f-603c95e4cae0"
       }
     }
   ],
